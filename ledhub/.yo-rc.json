@@ -1,0 +1,23 @@
+{
+  "generator-jhipster": {
+    "jhipsterVersion": "2.27.1",
+    "baseName": "ledhub",
+    "packageName": "de.kaipho.ledhub",
+    "packageFolder": "de/kaipho/ledhub",
+    "authenticationType": "jwt",
+    "hibernateCache": "no",
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "prodDatabaseType": "mysql",
+    "searchEngine": "no",
+    "buildTool": "maven",
+    "jwtSecretKey": "4063aee8542e108cdb2efcc570ba489c5c1ce195",
+    "rememberMeKey": "54bca67dae090200907813c7a5e616b064e65499",
+    "applicationType": "microservice",
+    "testFrameworks": [
+      "gatling"
+    ],
+    "skipClient": true,
+    "skipUserManagement": true
+  }
+}

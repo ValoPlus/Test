@@ -1,0 +1,405 @@
+= LED controller / HUB API Guide
+Tom Schmidt;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[[overview]]
+= Overview
+
+[[overview-http-verbs]]
+== HTTP verbs
+
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource
+
+| `PATCH`
+| Used to update an existing resource, including partial updates
+
+| `DELETE`
+| Used to delete an existing resource
+|===
+
+[[overview-http-status-codes]]
+== HTTP status codes
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| The request completed successfully
+
+| `201 Created`
+| A new resource has been created successfully. The resource's URI is available from the response's
+`Location` header
+
+| `204 No Content`
+| An update to an existing resource has been applied successfully
+
+| `400 Bad Request`
+| The request was malformed. The response body will // include an error providing further information
+
+| `404 Not Found`
+| The requested resource did not exist
+|===
+
+[[overview-errors]]
+== Errors
+
+Whenever an error response (status code >= 400) is returned, the body will contain a JSON object
+that describes the problem. The error object has the following structure:
+
+include::{snippets}/save-settings-412/response-fields.adoc[]
+
+For example, a request that has not all required arguments will produce a
+`412 Bad Request` response:
+
+include::{snippets}/save-settings-412/http-response.adoc[]
+
+[[resources]]
+= Resources
+
+[[resources-init]]
+== Init
+
+=== Initializes the controller
+
+A 'POST' request is used to initializes the controller and register the device to it.
+Returns the type of the Controller and the count of available Channels.
+
+==== Request structure
+
+include::{snippets}/init/request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/init/http-request.adoc[]
+
+==== Response structure
+
+include::{snippets}/init/response-fields.adoc[]
+
+==== Example response
+
+include::{snippets}/init/http-response.adoc[]
+
+Response for a wrong key:
+
+include::{snippets}/init-401/http-response.adoc[]
+
+[[resources-channel]]
+== Channel
+
+=== Get all Channels
+
+Returns an Array of all stored Channels
+
+==== Request parameter
+
+include::{snippets}/channel-get/request-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/channel-get/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/channel-get/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/channel-get/http-response.adoc[]
+
+=== Save new Channel
+
+Saves the new channel if no channel with the name exists.
+
+==== Request structure
+
+---
+
+==== Example request
+
+include::{snippets}/channel-post/http-request.adoc[]
+
+
+==== Example response
+
+include::{snippets}/channel-post/http-response.adoc[]
+
+=== Update a Channel
+
+==== Request structure
+
+---
+
+==== Example request
+
+include::{snippets}/channel-put/http-request.adoc[]
+
+
+==== Example response
+
+include::{snippets}/channel-put/http-response.adoc[]
+
+=== Delete a Channel
+
+==== Request structure
+
+---
+
+==== Example request
+
+include::{snippets}/channel-delete/http-request.adoc[]
+
+
+==== Example response
+
+include::{snippets}/channel-delete/http-response.adoc[]
+
+
+[[resources-settings]]
+== Settings
+
+=== Save new Settings
+
+A 'POST' request is used to save the settings.
+When channels are committed, the old channels should be overwritten.
+When only one channel should change, use the Channel Endpoints.
+
+==== Request structure
+
+include::{snippets}/save-settings/request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/save-settings/http-request.adoc[]
+
+==== JSON Request Schema
+
+[source,JSON]
+----
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "/",
+  "type": "object",
+  "properties": {
+    "wlan": {
+      "id": "wlan",
+      "type": "object",
+      "properties": {
+        "ssid": {
+          "id": "ssid",
+          "type": "string"
+        },
+        "pass": {
+          "id": "pass",
+          "type": "string"
+        },
+        "wlanSecurity": {
+          "id": "wlanSecurity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ssid",
+        "pass"
+      ]
+    },
+    "controllerAlias": {
+      "id": "controllerAlias",
+      "type": "string"
+    },
+    "clientId": {
+      "id": "clientId",
+      "type": "string"
+    }
+  },
+  "required": [
+    "controllerAlias",
+    "clientId"
+  ]
+}
+----
+
+==== Example response
+
+include::{snippets}/save-settings/http-response.adoc[]
+
+Response if the clientId is unknown:
+
+include::{snippets}/save-settings-401/http-response.adoc[]
+
+Response if an required parameter is missing:
+
+include::{snippets}/save-settings-412/http-response.adoc[]
+
+=== Get saved Settings
+
+A 'GET' request is used to get saved settings
+
+==== Request structure
+
+include::{snippets}/get-settings/request-parameters.adoc[]
+
+==== Example request
+
+include::{snippets}/get-settings/http-request.adoc[]
+
+==== Response structure
+
+include::{snippets}/get-settings/response-fields.adoc[]
+
+==== Example response
+
+include::{snippets}/get-settings/http-response.adoc[]
+
+== State
+
+Information about the state of the Channels. Contains the on/off info and optional data for the color.
+
+=== Get all States
+
+Returns an Array of all states. The [].state field can be empty because the app will do a second request for this data.
+
+==== Request parameter
+
+include::{snippets}/state-get/request-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/state-get/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/state-get/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/state-get/http-response.adoc[]
+
+=== Get one States
+
+Returns state of the channel with the given name. Returns NOT_FOUND if no matching channel was found.
+
+==== Request parameter
+
+include::{snippets}/one-state-get/request-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/one-state-get/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/one-state-get/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/one-state-get/http-response.adoc[]
+
+
+[source,JSON]
+----
+
+"channel": {
+      "id": "channel",
+      "type": "array",
+      "items": [
+        {
+          "id": "0",
+          "type": "object",
+          "properties": {
+            "name": {
+              "id": "name",
+              "type": "string"
+            },
+            "type": {
+              "id": "type",
+              "type": "string"
+            },
+            "typedef": {
+              "id": "typedef",
+              "type": "object",
+              "properties": {
+                "channelId": {
+                  "id": "channelId",
+                  "type": "integer"
+                },
+                "ledCount": {
+                  "id": "ledCount",
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "1",
+          "type": "object",
+          "properties": {
+            "name": {
+              "id": "name",
+              "type": "string"
+            },
+            "type": {
+              "id": "type",
+              "type": "string"
+            },
+            "typedef": {
+              "id": "typedef",
+              "type": "object",
+              "properties": {
+                "red": {
+                  "id": "red",
+                  "type": "integer"
+                },
+                "green": {
+                  "id": "green",
+                  "type": "integer"
+                },
+                "blue": {
+                  "id": "blue",
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "2",
+          "type": "object",
+          "properties": {
+            "name": {
+              "id": "name",
+              "type": "string"
+            },
+            "type": {
+              "id": "type",
+              "type": "string"
+            },
+            "typedef": {
+              "id": "typedef",
+              "type": "object",
+              "properties": {
+                "channelId": {
+                  "id": "channelId",
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+
+----
