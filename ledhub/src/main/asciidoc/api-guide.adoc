@@ -178,58 +178,17 @@ When only one channel should change, use the Channel Endpoints.
 
 ==== Request structure
 
+Fields:
+
 include::{snippets}/save-settings/request-fields.adoc[]
+
+Headers:
+
+include::{snippets}/save-settings/request-headers.adoc[]
 
 ==== Example request
 
 include::{snippets}/save-settings/http-request.adoc[]
-
-==== JSON Request Schema
-
-[source,JSON]
-----
-{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "/",
-  "type": "object",
-  "properties": {
-    "wlan": {
-      "id": "wlan",
-      "type": "object",
-      "properties": {
-        "ssid": {
-          "id": "ssid",
-          "type": "string"
-        },
-        "pass": {
-          "id": "pass",
-          "type": "string"
-        },
-        "wlanSecurity": {
-          "id": "wlanSecurity",
-          "type": "string"
-        }
-      },
-      "required": [
-        "ssid",
-        "pass"
-      ]
-    },
-    "controllerAlias": {
-      "id": "controllerAlias",
-      "type": "string"
-    },
-    "clientId": {
-      "id": "clientId",
-      "type": "string"
-    }
-  },
-  "required": [
-    "controllerAlias",
-    "clientId"
-  ]
-}
-----
 
 ==== Example response
 

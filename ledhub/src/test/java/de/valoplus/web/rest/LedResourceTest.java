@@ -1,7 +1,6 @@
 package de.valoplus.web.rest;
 
 import de.valoplus.LedhubApp;
-import de.valoplus.channel.*;
 import de.valoplus.wlan.Wlan;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,11 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static de.valoplus.web.rest.MapUtil.map;
-import static de.valoplus.web.rest.MapUtil.oMap;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -32,8 +31,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 
@@ -70,20 +68,11 @@ public class LedResourceTest {
     }
 
     private ResultActions postSettings() throws Exception {
-        Wlan wlan = new Wlan("neoWlan", "secret2", Wlan.WLANSecurity.WPA2);
+        Wlan wlan = new Wlan("neoWlan", "secret", Wlan.WLANSecurity.WPA2);
 
-        Channel channel1 = new Channel("Channel1", ChannelTypes.WS2812.name(), new ChannelTypeWS2812(1, 25));
-        Channel channel2 = new Channel("Channel2", ChannelTypes.LED_STRIP_RGB.name(), new ChannelTypeRGB(2, 4, 3));
-        Channel channel3 = new Channel("Channel3", ChannelTypes.LED_STRIP.name(), new ChannelTypeSingleColor(5));
-
-        Map<Object, Object> content = oMap("controllerAlias", "mock")
-            .put("clientId", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4")
-            .last("wlan", wlan)
-            /*.last("channel", Lists.newArrayList(channel1, channel2, channel3))*/;
-
-        return mockMvc.perform(post("/api/settings")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(content)));
+        return mockMvc.perform(post("/api/settings/wlan").header("Authorization", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4")
+                                                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                                                    .content(TestUtil.convertObjectToJsonBytes(wlan)));
     }
 
     @Test
@@ -129,35 +118,23 @@ public class LedResourceTest {
         doInit();
 
         postSettings()
-            .andExpect(status().isOk())
+            .andExpect(status().isOk()).andExpect(content().string("Wlan settings saved. Controller will try to reconnect."))
             .andDo(document("save-settings", preprocessRequest(prettyPrint()),
                 requestFields(
-                    fieldWithPath("controllerAlias")
-                        .description("A name to identify the controller")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("clientId")
-                        .description("The unique id of the device")
-                        .type(JsonFieldType.STRING),
-                    fieldWithPath("wlan")
-                        .description("The authentication for the WLAN")
-                        .attributes(optional)
-                        .type(JsonFieldType.OBJECT),
-                    fieldWithPath("wlan.pass")
+                    fieldWithPath("pass")
                         .description("The key for the WLAN")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("wlan.ssid")
+                    fieldWithPath("ssid")
                         .description("The SSID / name for the WLAN")
                         .type(JsonFieldType.STRING),
-                    fieldWithPath("wlan.wlanSecurity")
+                    fieldWithPath("wlanSecurity")
                         .description("The Security System. Values: WPA, WPA2, NONE")
                         .type(JsonFieldType.STRING)
-                    /*,fieldWithPath("channel")
-                        .description("A List of all channels")
-                        .attributes(optional)
-                        .type(JsonFieldType.ARRAY)*/)));
+                ),
+                requestHeaders(headerWithName("Authorization").description("The unique id of the device"))));
     }
 
-    @Test
+/*    @Test
     public void setSettings412() throws Exception {
         doInit();
 
@@ -178,9 +155,9 @@ public class LedResourceTest {
                             fieldWithPath("fieldErrors")
                                 .ignored()
                         )));
-    }
+    }*/
 
-    @Test
+/*    @Test
     public void setSettings401() throws Exception {
         doInit();
 
@@ -199,7 +176,7 @@ public class LedResourceTest {
                             fieldWithPath("description").ignored(),
                             fieldWithPath("fieldErrors").ignored()
                         )));
-    }
+    }*/
 
     @Test
     public void getSettings() throws Exception {

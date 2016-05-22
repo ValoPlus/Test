@@ -1,13 +1,12 @@
 package de.valoplus.web.rest
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import de.valoplus.channel.*
 import de.valoplus.dto.ControllerRequestDTO
 import de.valoplus.dto.InitRequestDTO
 import de.valoplus.dto.InitResponseDTO
 import de.valoplus.service.ControllerMock
-import de.valoplus.web.rest.dto.SettingsRequestDTO
 import de.valoplus.web.rest.errors.ErrorDTO
+import de.valoplus.wlan.Wlan
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -76,19 +75,13 @@ class LedResource {
             ControllerRequestDTO(ledController.wlan!!, ledController.name, ""))
     }
 
-    @RequestMapping(value = "/settings", method = arrayOf(RequestMethod.POST))
-    fun setSettings(@RequestBody settings: SettingsRequestDTO): ResponseEntity<Any> {
-        /*        if (settings.clientId == null || settings.controllerAlias == null) {
-                    return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body<Any>(ErrorDTO("missing required argument"))
-                }*/
-        if (!ledController.knownDevices.contains(settings.clientId)) {
+    @RequestMapping(value = "/settings/wlan", method = arrayOf(RequestMethod.POST))
+    fun setSettings(@RequestBody wlan: Wlan, @RequestHeader("Authorization") clientId: String): ResponseEntity<Any> {
+        if (!ledController.knownDevices.contains(clientId)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body<Any>(ErrorDTO("device not registered"))
         }
-        val mapper = ObjectMapper()
-
-        ledController.name = settings.controllerAlias
-        ledController.wlan = settings.wlan
-        return ResponseEntity.ok<Any>(null)
+        ledController.wlan = wlan;
+        return ResponseEntity.ok<Any>("Wlan settings saved. Controller will try to reconnect.")
     }
 
     @ExceptionHandler(UninitializedPropertyAccessException::class)
