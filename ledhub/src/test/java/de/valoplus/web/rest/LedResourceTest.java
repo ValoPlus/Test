@@ -97,7 +97,13 @@ public class LedResourceTest {
                             .type(JsonFieldType.STRING),
                         fieldWithPath("availableChannel")
                             .description("The available channels on the controller")
-                            .type(JsonFieldType.NUMBER)
+                            .type(JsonFieldType.NUMBER),
+                        fieldWithPath("controllerAlias")
+                            .description("The Name of the controller")
+                            .type(JsonFieldType.STRING),
+                        fieldWithPath("configured")
+                            .description("Is the controller already configured?")
+                            .type(JsonFieldType.BOOLEAN)
                     )));
     }
 

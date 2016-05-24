@@ -54,7 +54,7 @@ class LedResource {
         }
         ledController.knownDevices.add(data.clientId!!)
 
-        return ResponseEntity.ok(InitResponseDTO("ESP8266", ledController.availableChannel))
+        return ResponseEntity.ok(InitResponseDTO("ESP8266", ledController.availableChannel, ledController.name, true))
     }
 
     @RequestMapping(value = "/status", method = arrayOf(RequestMethod.GET))
