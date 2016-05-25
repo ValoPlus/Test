@@ -30,18 +30,15 @@ class ChannelRessouce {
     }
 
     @RequestMapping(value = "/channel", method = arrayOf(RequestMethod.POST))
-    fun postChannel(@RequestBody request: RequestWrapper<ChannelRequestDTO>): ResponseEntity<Void> {
-        if (!request.isAutorized()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-        }
+    fun postChannel(@RequestBody request: ChannelRequestDTO): ResponseEntity<Void> {
 
         ledController.channel.forEach {
-            if (it.name?.equals(request.content?.name)!!) {
+            if (it.name?.equals(request.name)!!) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build()
             }
         }
 
-        ledController.channel.add(JsonConverter.parseChannelType(request.content))
+        ledController.channel.add(JsonConverter.parseChannelType(request))
 
         return ResponseEntity.ok().build()
     }

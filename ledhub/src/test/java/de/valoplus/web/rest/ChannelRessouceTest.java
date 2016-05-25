@@ -93,7 +93,7 @@ public class ChannelRessouceTest {
 
         mockMvc.perform(
             post("/api/channel").contentType(TestUtil.APPLICATION_JSON_UTF8)
-                                .content(TestUtil.convertObjectToJsonBytes(new RequestWrapper<>("7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4", channel))))
+                                .content(TestUtil.convertObjectToJsonBytes(channel)))
                .andExpect(status().isOk())
                .andDo(document("channel-post", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
 
