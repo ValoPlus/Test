@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static de.valoplus.web.rest.MapUtil.map;
@@ -71,8 +72,8 @@ public class LedResourceTest {
         Wlan wlan = new Wlan("neoWlan", "secret", Wlan.WLANSecurity.WPA2);
 
         return mockMvc.perform(post("/api/settings/wlan").header("Authorization", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4")
-                                                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                                                    .content(TestUtil.convertObjectToJsonBytes(wlan)));
+                                                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                                                         .content(TestUtil.convertObjectToJsonBytes(wlan)));
     }
 
     @Test
@@ -124,7 +125,8 @@ public class LedResourceTest {
         doInit();
 
         postSettings()
-            .andExpect(status().isOk()).andExpect(content().string("Wlan settings saved. Controller will try to reconnect."))
+            .andExpect(status().isOk())
+            .andExpect(content().string("Wlan settings saved. Controller will try to reconnect."))
             .andDo(document("save-settings", preprocessRequest(prettyPrint()),
                 requestFields(
                     fieldWithPath("pass")
@@ -191,7 +193,6 @@ public class LedResourceTest {
 
         this.mockMvc.perform(get("/api/settings").param("clientId", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("controllerAlias").value("mock"))
                     .andDo(document("get-settings", preprocessResponse(prettyPrint()),
                         requestParameters(
                             parameterWithName("clientId").description("The unique id of the device")),
@@ -213,5 +214,22 @@ public class LedResourceTest {
                             fieldWithPath("wlan.wlanSecurity")
                                 .description("The Security System. Values: WPA, WPA2, NONE")
                                 .type(JsonFieldType.STRING))));
+    }
+
+    @Test
+    public void testSaveName() throws Exception {
+        Map<String, String> data = new HashMap<>();
+        data.put("alias", "newName");
+        this.mockMvc.perform(post("/api/settings/alias").header("Authorization", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4")
+                                                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                                                        .content(TestUtil.convertObjectToJsonBytes(data)))
+                    .andExpect(status().isOk())
+                    .andDo(document("save-alias",
+                        preprocessRequest(prettyPrint()),
+                        requestHeaders(headerWithName("Authorization")
+                            .description("The unique id of the device")),
+                        requestFields(fieldWithPath("alias")
+                            .description("The alias for the controller")
+                            .type(JsonFieldType.STRING))));
     }
 }

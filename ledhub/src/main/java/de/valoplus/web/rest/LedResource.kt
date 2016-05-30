@@ -84,6 +84,15 @@ class LedResource {
         return ResponseEntity.ok<Any>("Wlan settings saved. Controller will try to reconnect.")
     }
 
+    @RequestMapping(value = "/settings/alias", method = arrayOf(RequestMethod.POST))
+    fun setSettings(@RequestBody alias: String, @RequestHeader("Authorization") clientId: String): ResponseEntity<Any> {
+        if (!ledController.knownDevices.contains(clientId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body<Any>(ErrorDTO("device not registered"))
+        }
+        ledController.name = alias;
+        return ResponseEntity.ok<Any>(null)
+    }
+
     @ExceptionHandler(UninitializedPropertyAccessException::class)
     fun handleLateinitError(ex: UninitializedPropertyAccessException): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body<Any>(ErrorDTO("missing required argument"));
