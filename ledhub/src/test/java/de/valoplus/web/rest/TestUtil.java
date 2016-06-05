@@ -1,21 +1,11 @@
 package de.valoplus.web.rest;
 
-import de.valoplus.domain.util.JSR310DateTimeSerializer;
-import de.valoplus.domain.util.JSR310LocalDateDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import de.valoplus.domain.util.JSR310DateTimeSerializer;
-import de.valoplus.domain.util.JSR310LocalDateDeserializer;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 
 /**
  * Utility class for testing REST controllers.
@@ -39,14 +29,6 @@ public class TestUtil {
             throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-        JavaTimeModule module = new JavaTimeModule();
-        module.addSerializer(OffsetDateTime.class, JSR310DateTimeSerializer.INSTANCE);
-        module.addSerializer(ZonedDateTime.class, JSR310DateTimeSerializer.INSTANCE);
-        module.addSerializer(LocalDateTime.class, JSR310DateTimeSerializer.INSTANCE);
-        module.addSerializer(Instant.class, JSR310DateTimeSerializer.INSTANCE);
-        module.addDeserializer(LocalDate.class, JSR310LocalDateDeserializer.INSTANCE);
-        mapper.registerModule(module);
 
         return mapper.writeValueAsBytes(object);
     }

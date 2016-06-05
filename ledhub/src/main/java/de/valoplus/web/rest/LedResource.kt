@@ -1,7 +1,6 @@
 package de.valoplus.web.rest
 
 import de.valoplus.channel.*
-import de.valoplus.dto.ControllerRequestDTO
 import de.valoplus.dto.InitRequestDTO
 import de.valoplus.dto.InitResponseDTO
 import de.valoplus.service.ControllerMock
@@ -65,14 +64,9 @@ class LedResource {
         return ResponseEntity.ok<Any>(null)
     }
 
-    @RequestMapping(value = "/settings", method = arrayOf(RequestMethod.GET))
-    fun getSettings(@RequestParam clientId: String): ResponseEntity<Any> {
-        println("...")
-        if (!ledController.knownDevices.contains(clientId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body<Any>(ErrorDTO("device not registered"))
-        }
-        return ResponseEntity.ok<Any>(
-            ControllerRequestDTO(ledController.wlan!!, ledController.name, ""))
+    @RequestMapping(value = "/settings/wlan", method = arrayOf(RequestMethod.GET))
+    fun getSettings(): ResponseEntity<Any> {
+        return ResponseEntity.ok<Any>(ledController.wlan)
     }
 
     @RequestMapping(value = "/settings/wlan", method = arrayOf(RequestMethod.POST))

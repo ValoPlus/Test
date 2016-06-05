@@ -27,12 +27,11 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 
@@ -191,27 +190,17 @@ public class LedResourceTest {
         doInit();
         postSettings();
 
-        this.mockMvc.perform(get("/api/settings").param("clientId", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4"))
+        this.mockMvc.perform(get("/api/settings/wlan").header("Authorization", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4"))
                     .andExpect(status().isOk())
                     .andDo(document("get-settings", preprocessResponse(prettyPrint()),
-                        requestParameters(
-                            parameterWithName("clientId").description("The unique id of the device")),
                         responseFields(
-                            fieldWithPath("clientId").ignored(),
-                            fieldWithPath("controllerAlias")
-                                .description("A name to identify the controller")
-                                .type(JsonFieldType.STRING),
-                            fieldWithPath("wlan")
-                                .description("The authentication for the WLAN")
-                                .attributes(optional)
-                                .type(JsonFieldType.OBJECT),
-                            fieldWithPath("wlan.pass")
+                            fieldWithPath("pass")
                                 .description("The key for the WLAN")
                                 .type(JsonFieldType.STRING),
-                            fieldWithPath("wlan.ssid")
+                            fieldWithPath("ssid")
                                 .description("The SSID / name for the WLAN")
                                 .type(JsonFieldType.STRING),
-                            fieldWithPath("wlan.wlanSecurity")
+                            fieldWithPath("wlanSecurity")
                                 .description("The Security System. Values: WPA, WPA2, NONE")
                                 .type(JsonFieldType.STRING))));
     }
