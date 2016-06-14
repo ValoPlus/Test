@@ -170,7 +170,24 @@ include::{snippets}/channel-delete/http-response.adoc[]
 [[resources-settings]]
 == Settings
 
-=== Save new Settings
+=== Save Alias
+
+==== Request structure
+
+Fields:
+
+include::{snippets}/save-alias/request-fields.adoc[]
+
+Headers:
+
+include::{snippets}/save-alias/request-headers.adoc[]
+
+==== Example request
+
+include::{snippets}/save-alias/http-request.adoc[]
+
+
+=== Save Wlan Settings
 
 A 'POST' request is used to save the settings.
 When channels are committed, the old channels should be overwritten.
@@ -194,15 +211,7 @@ include::{snippets}/save-settings/http-request.adoc[]
 
 include::{snippets}/save-settings/http-response.adoc[]
 
-Response if the clientId is unknown:
-
-include::{snippets}/save-settings-401/http-response.adoc[]
-
-Response if an required parameter is missing:
-
-include::{snippets}/save-settings-412/http-response.adoc[]
-
-=== Get saved Settings
+=== Get Wlan Settings
 
 A 'GET' request is used to get saved settings
 
@@ -265,100 +274,3 @@ include::{snippets}/one-state-get/http-request.adoc[]
 ==== Example response
 
 include::{snippets}/one-state-get/http-response.adoc[]
-
-
-[source,JSON]
-----
-
-"channel": {
-      "id": "channel",
-      "type": "array",
-      "items": [
-        {
-          "id": "0",
-          "type": "object",
-          "properties": {
-            "name": {
-              "id": "name",
-              "type": "string"
-            },
-            "type": {
-              "id": "type",
-              "type": "string"
-            },
-            "typedef": {
-              "id": "typedef",
-              "type": "object",
-              "properties": {
-                "channelId": {
-                  "id": "channelId",
-                  "type": "integer"
-                },
-                "ledCount": {
-                  "id": "ledCount",
-                  "type": "integer"
-                }
-              }
-            }
-          }
-        },
-        {
-          "id": "1",
-          "type": "object",
-          "properties": {
-            "name": {
-              "id": "name",
-              "type": "string"
-            },
-            "type": {
-              "id": "type",
-              "type": "string"
-            },
-            "typedef": {
-              "id": "typedef",
-              "type": "object",
-              "properties": {
-                "red": {
-                  "id": "red",
-                  "type": "integer"
-                },
-                "green": {
-                  "id": "green",
-                  "type": "integer"
-                },
-                "blue": {
-                  "id": "blue",
-                  "type": "integer"
-                }
-              }
-            }
-          }
-        },
-        {
-          "id": "2",
-          "type": "object",
-          "properties": {
-            "name": {
-              "id": "name",
-              "type": "string"
-            },
-            "type": {
-              "id": "type",
-              "type": "string"
-            },
-            "typedef": {
-              "id": "typedef",
-              "type": "object",
-              "properties": {
-                "channelId": {
-                  "id": "channelId",
-                  "type": "integer"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
-
-----
