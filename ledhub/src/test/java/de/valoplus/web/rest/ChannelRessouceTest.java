@@ -9,7 +9,6 @@ import de.valoplus.LedhubApp;
 import de.valoplus.channel.Channel;
 import de.valoplus.channel.ChannelTypeWS2812;
 import de.valoplus.channel.ChannelTypes;
-import de.valoplus.dto.RequestWrapper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -102,7 +101,6 @@ public class ChannelRessouceTest {
 
     public void deleteChannel() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.put("clientId", Lists.newArrayList("7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4"));
         params.put("channelName", Lists.newArrayList("42"));
         mockMvc.perform(
             delete("/api/channel").params(params))
@@ -116,7 +114,7 @@ public class ChannelRessouceTest {
 
         mockMvc.perform(
             put("/api/channel").contentType(TestUtil.APPLICATION_JSON_UTF8)
-                               .content(TestUtil.convertObjectToJsonBytes(new RequestWrapper<>("7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4", channel))))
+                               .content(TestUtil.convertObjectToJsonBytes(channel)))
                .andExpect(status().isOk())
                .andDo(document("channel-put", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
     }

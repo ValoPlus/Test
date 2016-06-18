@@ -3,7 +3,6 @@ package de.valoplus.web.rest
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.valoplus.channel.*
 import de.valoplus.converter.JsonConverter
-import de.valoplus.dto.RequestWrapper
 import de.valoplus.service.ControllerMock
 import de.valoplus.web.rest.dto.ChannelRequestDTO
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*
  * Created by tom on 23.02.16.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/channel")
 class ChannelRessouce {
     var ledController: ControllerMock
 
@@ -24,12 +23,12 @@ class ChannelRessouce {
         this.ledController = ledController
     }
 
-    @RequestMapping(value = "/channel", method = arrayOf(RequestMethod.GET))
+    @GetMapping
     fun getAllChannel(@RequestParam clientId: String): ResponseEntity<List<Channel>>  {
         return ResponseEntity.ok(ledController.channel)
     }
 
-    @RequestMapping(value = "/channel", method = arrayOf(RequestMethod.POST))
+    @PostMapping
     fun postChannel(@RequestBody request: ChannelRequestDTO): ResponseEntity<Void> {
 
         ledController.channel.forEach {
@@ -43,12 +42,8 @@ class ChannelRessouce {
         return ResponseEntity.ok().build()
     }
 
-    @RequestMapping(value = "/channel", method = arrayOf(RequestMethod.DELETE))
-    fun deleteChannel(@RequestParam channelName: String, @RequestParam clientId: String): ResponseEntity<Void> {
-        if (!ledController.knownDevices.contains(clientId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-        }
-
+    @DeleteMapping
+    fun deleteChannel(@RequestParam channelName: String): ResponseEntity<Void> {
         val channels = ledController.channel
         for(i in channels.indices) {
             if (channels[i].name?.equals(channelName)!!) {
@@ -56,33 +51,24 @@ class ChannelRessouce {
                 return ResponseEntity.ok().build()
             }
         }
-
         return ResponseEntity.notFound().build()
     }
 
     /**
      * Updates the channel.
      */
-    @RequestMapping(value = "/channel", method = arrayOf(RequestMethod.PUT))
-    fun updateChannel(@RequestBody request: RequestWrapper<ChannelRequestDTO>): ResponseEntity<Void> {
-        if (!request.isAutorized()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-        }
-
+    @PutMapping
+    fun updateChannel(@RequestBody request: ChannelRequestDTO): ResponseEntity<Void> {
         val channels = ledController.channel
         for(i in channels.indices) {
-            if (channels.get(i).name?.equals(request.content?.name)!!) {
+            if (channels.get(i).name?.equals(request.name)!!) {
                 channels.removeAt(i)
-                channels.add(JsonConverter.parseChannelType(request.content))
+                channels.add(JsonConverter.parseChannelType(request))
                 return ResponseEntity.ok().build()
             }
         }
 
         return ResponseEntity.notFound().build()
-    }
-
-    fun RequestWrapper<ChannelRequestDTO>.isAutorized(): Boolean {
-        return ledController.knownDevices.contains(this.clientId)
     }
 
     fun JsonConverter.parseChannelType(old : ChannelRequestDTO?) : Channel {
@@ -101,36 +87,4 @@ class ChannelRessouce {
         channel.typedef = type
         return channel
     }
-
-    /*
-    Alle
-    Falsche clientId
-    -> UNAUTHORIZED
-
-
-    @RequestMapping(value = "/channel", method = RequestMethod.DELETE)
-    ResponseEntity deleteChannel(@RequestParam String channelName, @RequestParam String clientId) {
-        // Channel mit dem Namen löschen
-        // -> 200
-        // Channel nicht gefunden
-        // -> 404
-
-    }
-
-    @RequestMapping(value = "/channel", method = RequestMethod.POST)
-    ResponseEntity updateChannel(@RequestBody Channel channel) {
-        // Channel mit dem Namen ersetzen
-        // -> 201
-        // Channel nicht gefunden
-        // -> 404
-    }
-
-    @RequestMapping(value = "/channel", method = RequestMethod.PUT)
-    ResponseEntity putChannel(@RequestBody Channel channel) {
-        // Channel mit dem Namen speichern
-        // -> 200
-        // Channel existiert bereits mit dem Namen / Pin
-        // -> 409
-    }
-     */
 }
