@@ -30,8 +30,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -69,11 +67,9 @@ public class ChannelRessouceTest {
 
     public void getChannel() throws Exception {
         mockMvc.perform(
-            get("/api/channel").param("clientId", DEVICE_ID))
+            get("/api/channel").header("Authorization", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4"))
                .andExpect(status().isOk())
                .andDo(document("channel-get", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                   requestParameters(
-                       parameterWithName("clientId").description("The unique id of the device")),
                    responseFields(
                        fieldWithPath("[].name")
                            .description("The unique name of the Channel")
@@ -91,7 +87,7 @@ public class ChannelRessouceTest {
         Channel channel = new Channel("42", ChannelTypes.WS2812.name(), new ChannelTypeWS2812(7, 42));
 
         mockMvc.perform(
-            post("/api/channel").contentType(TestUtil.APPLICATION_JSON_UTF8)
+            post("/api/channel").header("Authorization", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4").contentType(TestUtil.APPLICATION_JSON_UTF8)
                                 .content(TestUtil.convertObjectToJsonBytes(channel)))
                .andExpect(status().isOk())
                .andDo(document("channel-post", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
@@ -103,7 +99,7 @@ public class ChannelRessouceTest {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.put("channelName", Lists.newArrayList("42"));
         mockMvc.perform(
-            delete("/api/channel").params(params))
+            delete("/api/channel").header("Authorization", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4").params(params))
                .andExpect(status().isOk())
                .andDo(document("channel-delete", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
 
@@ -113,7 +109,7 @@ public class ChannelRessouceTest {
         Channel channel = new Channel("42", ChannelTypes.WS2812.name(), new ChannelTypeWS2812(7, 47));
 
         mockMvc.perform(
-            put("/api/channel").contentType(TestUtil.APPLICATION_JSON_UTF8)
+            put("/api/channel").header("Authorization", "7882ABD9-B905-4ABB-BC90-4E71DE8CC9E4").contentType(TestUtil.APPLICATION_JSON_UTF8)
                                .content(TestUtil.convertObjectToJsonBytes(channel)))
                .andExpect(status().isOk())
                .andDo(document("channel-put", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));

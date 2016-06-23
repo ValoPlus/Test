@@ -24,7 +24,7 @@ class ChannelRessouce {
     }
 
     @GetMapping
-    fun getAllChannel(@RequestParam clientId: String): ResponseEntity<List<Channel>>  {
+    fun getAllChannel(): ResponseEntity<List<Channel>>  {
         return ResponseEntity.ok(ledController.channel)
     }
 
